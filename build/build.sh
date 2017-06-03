@@ -3,13 +3,13 @@
 if [ -z "$1" ]
   then
     echo "You must pass a specific tag."
-    echo "Ex: ./build.sh v3.0.0"
+    echo "Ex: ./build.sh 3.0.0"
     exit 1
 fi
 
 arch=$(arch)
 os=$(uname -s)
-dest_file=onyx-$1-$os-$arch.tar.gz
+dest_file=onyx-v$1-$os-$arch.tar.gz
 
 echo "Building file $dest_file"
 
@@ -33,3 +33,10 @@ cd ..
 
 # creating archive
 tar zcvf $dest_file onyx
+
+#remove last version file if exist
+rm -rf last_version.txt
+
+echo $1 >> last_version.txt
+
+echo "Build completed !"
