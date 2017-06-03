@@ -26,10 +26,10 @@ cd onyx
 rm -rf .git
 
 # install dependencies
-sudo bash setup.sh
+source setup.sh
 
 # Move back
 cd ..
 
 # creating archive
-tar zcvf $dest_file ./onyx
+tar zcvf $dest_file onyx
