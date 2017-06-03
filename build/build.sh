@@ -14,7 +14,7 @@ dest_file=onyx-$1-$os-$arch.tar.gz
 echo "Building file $dest_file"
 
 # clean folder if exit
-rm -rf gladys
+rm -rf onyx
 
 # Cloning repository
 git clone https://github.com/OnyxProject/Onyx onyx
@@ -26,7 +26,7 @@ cd onyx
 rm -rf .git
 
 # install dependencies
-bash setup.sh
+sudo bash setup.sh
 
 # Move back
 cd ..
