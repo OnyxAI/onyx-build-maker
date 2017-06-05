@@ -2,7 +2,7 @@
 
 ONYX_VERSION=1.0.0
 
-ONYX_FOLDER="/home/pi/onyx"
+ONYX_FOLDER="/home/pi/Onyx"
 
 wget http://download.onyxlabs.fr/onyx-build/onyx-v$ONYX_VERSION-Linux-armv6l.tar.gz
 
