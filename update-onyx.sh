@@ -38,7 +38,7 @@ rm -rf $ONYX_FOLDER
 tar zxvf onyx-v$ONYX_VERSION-Linux-armv6l.tar.gz
 
 cp -ar $TMP_DB/. $ONYX_FOLDER/onyx/db
-mkdir $ONYX_FOLDER/onyx/data
+mkdir -p $ONYX_FOLDER/onyx/data
 cp -ar $TMP_DATA/. $ONYX_FOLDER/onyx/data
 
 # restart Onyx
