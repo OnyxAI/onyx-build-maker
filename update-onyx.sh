@@ -1,23 +1,23 @@
+
 #!/bin/bash
 
 function validate_url(){
-  if [[ `wget -S --spider $1  2>&1 | grep 'HTTP/1.1 200 OK'` ]]; then echo "true"; fi
+  if [[ `wget -S --spider $1  2>&1 | grep 'HTTP/1.1 200 OK'` ]];
+  then
+    wget http://download.onyxlabs.fr/onyx-build/onyx-v$ONYX_VERSION-Linux-armv6l.tar.gz
+  else
+    echo "FILE NOT EXIST"
+    echo "EXIT"
+    exit 1
+  fi
 }
 
 ONYX_VERSION=$(curl -s 'https://raw.githubusercontent.com/OnyxProject/Onyx/master/version.json' | jq -r '.version')
 ONYX_FOLDER="/home/pi/Onyx"
 TMP_DB="/tmp/onyx_db"
 TMP_DATA="/tmp/onyx_data"
-ONYX_URL = http://download.onyxlabs.fr/onyx-build/onyx-v$ONYX_VERSION-Linux-armv6l.tar.gz
 
-if `validate_url $ONYX_URL >/dev/null`;
-then
-  wget $ONYX_URL
-else
-  echo "FILE NOT EXIST"
-  echo "EXIT"
-  exit 1
-fi
+validate_url http://download.onyxlabs.fr/onyx-build/onyx-v$ONYX_VERSION-Linux-armv6l.tar.gz
 
 # stop onyx
 sudo onyx stop
