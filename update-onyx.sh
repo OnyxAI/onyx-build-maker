@@ -1,5 +1,6 @@
-
 #!/bin/bash
+export PATH="$HOME/bin:$PATH"
+
 
 function validate_url(){
   if [[ `wget -S --spider $1  2>&1 | grep 'HTTP/1.1 200 OK'` ]];
