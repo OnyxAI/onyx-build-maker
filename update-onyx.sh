@@ -1,7 +1,6 @@
 #!/bin/bash
 export PATH="$HOME/bin:$PATH"
 
-
 function validate_url(){
   if [[ `wget -S --spider $1  2>&1 | grep 'HTTP/1.1 200 OK'` ]];
   then
@@ -21,7 +20,7 @@ TMP_DATA="/tmp/onyx_data"
 validate_url http://download.onyxlabs.fr/onyx-build/onyx-v$ONYX_VERSION-Linux-armv6l.tar.gz
 
 # stop onyx
-sudo onyx stop
+onyx stop
 
 rm -rf $TMP_DB
 rm -rf $TMP_DATA
@@ -43,4 +42,4 @@ mkdir -p $ONYX_FOLDER/onyx/data
 cp -ar $TMP_DATA/. $ONYX_FOLDER/onyx/data
 
 # restart Onyx
-sudo onyx start
+onyx start
