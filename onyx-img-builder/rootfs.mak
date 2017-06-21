@@ -190,4 +190,4 @@ $(IMAGE_FILE): $(ROOTFS_DIR)
 	touch $@_$(TIMESTAMP).img
 
 	echo -e "Compressing image"
-  gzip $@_$(TIMESTAMP).img
+  gzip $(IMAGE_FILE)_$(TIMESTAMP).img
