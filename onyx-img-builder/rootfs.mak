@@ -188,6 +188,4 @@ $(IMAGE_FILE): $(ROOTFS_DIR)
 	@echo "Plugins: $$(cat plugins.txt | xargs | sed -e 's;plugins/;;g' -e 's; ;, ;g')"
 	@echo
 	touch $@_$(TIMESTAMP).img
-
-	echo -e "Compressing image"
-  gzip $(IMAGE_FILE)_$(TIMESTAMP).img
+	gzip $(IMAGE_FILE)_$(TIMESTAMP).img
