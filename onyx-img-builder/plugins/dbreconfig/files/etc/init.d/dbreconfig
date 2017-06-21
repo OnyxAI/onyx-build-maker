@@ -1,0 +1,53 @@
+#!/bin/bash -e
+### BEGIN INIT INFO
+# Provides: dbreconfig
+# Required-Start: $all
+# Required-Stop:
+# Default-Start: 2 3 4 5
+# Default-Stop:
+# Short-Description: Reconfigure dbconfig scripts
+# Description:
+### END INIT INFO
+
+. /lib/lsb/init-functions
+
+if [ -e /var/tmp/system-resizefs ]; then
+	exit 0;
+fi
+
+DO_REBOOT=0
+
+do_reconf() {
+	while lsof /var/cache/debconf/templates.dat > /dev/null; do
+		sleep 5
+	done
+
+	if [ -d /etc/dbconfig-common ] && [ -e /etc/dbconfig-common/*.conf ]; then
+		for i in /etc/dbconfig-common/*.conf; do
+			PKGNAME=$(dpkg -S $i | cut -d: -f1)
+			oldval=$(debconf-show ${PKGNAME} | grep ${PKGNAME}/dbconfig-reinstall | cut -d: -f2 | tr -d '[[:space:]]')
+			/bin/echo "${PKGNAME} ${PKGNAME}/dbconfig-reinstall select true" | /usr/bin/debconf-set-selections
+			dpkg-reconfigure -f noninteractive ${PKGNAME}
+			/bin/echo "${PKGNAME} ${PKGNAME}/dbconfig-reinstall select ${oldval}" | /usr/bin/debconf-set-selections
+			DO_REBOOT=1
+		done
+	fi
+}
+
+case "$1" in
+	start)
+		log_daemon_msg "Starting dbreconfig" &&
+		do_reconf &&
+		update-rc.d dbreconfig remove &&
+		rm -f /etc/init.d/dbreconfig &&
+		rm -f /var/tmp/system-dbreconfig &&
+		log_end_msg $? &&
+		if [[ $DO_REBOOT -eq 1 ]]; then reboot; fi
+	;;
+	*)
+		echo "Usage: $0 start" >&2
+		exit 3
+	;;
+esac
+
+exit 0

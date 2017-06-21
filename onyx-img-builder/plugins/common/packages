@@ -1,0 +1,1 @@
+apt-utils ca-certificates sudo openssh-server ntpdate initramfs-tools ifupdown net-tools crda whiptail parted man-db udev libpam-systemd util-linux nano vim wpasupplicant wireless-tools firmware-atheros firmware-brcm80211 firmware-libertas firmware-ralink firmware-realtek raspberrypi-net-mods dhcpcd5 

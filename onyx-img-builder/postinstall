@@ -1,0 +1,135 @@
+#!/usr/bin/env bash
+set -e
+
+#
+# NOTE: This script is run within the chroot after second stage debootstrap!
+#
+
+# Make sure we are chrooted
+if [ "$(stat -c %d:%i /)" = "$(stat -c %d:%i /proc/1/root/.)" ]; then
+	echo "Something went wrong and we aren't in a chroot, to save your system from damage the script will fail and exit now."
+	exit 1;
+fi
+
+if [ "$#" -lt 8 ]; then
+	echo "Usage: $0 DIST ARCH LOCALE UNAME UPASS RPASS INC_REC UBOOT_DIR"
+	exit 1
+fi
+
+DIST=$1
+ARCH=$2
+LOCALE=$3
+UNAME=$4
+UPASS=$5
+RPASS=$6
+INC_REC=$7
+UBOOT_DIR=$8
+
+echo "Running postinstall script..."
+
+# Sanitize environnement
+LC_ALL=C
+LANG=C
+
+# Make dpkg/apt-get noninteractive
+export DEBIAN_FRONTEND=noninteractive
+export DEBCONF_NONINTERACTIVE_SEEN=true
+export LC_ALL=C LANGUAGE=C LANG=C
+export FLASH_KERNEL_SKIP=1
+export RIB_DIST=${DIST}
+if [ "${UBOOT_DIR}" = "rpi_3" ]; then
+	export FK_MACHINE="Raspberry Pi 3 Model B"
+else
+	export FK_MACHINE="Raspberry Pi 2 Model B"
+fi
+
+# Prevent apt-get from starting services
+echo "#!/bin/sh
+exit 101
+" > /usr/sbin/policy-rc.d
+chmod +x /usr/sbin/policy-rc.d
+
+# Set the locale
+echo "LANG=${LOCALE}" >> /etc/default/locale
+echo "locales locales/default_environment_locale select ${LOCALE}" | debconf-set-selections
+echo "locales locales/locales_to_be_generated select ${LOCALE} UTF-8" | debconf-set-selections
+
+# Finish multistrap
+/var/lib/dpkg/info/base-passwd.preinst install
+/var/lib/dpkg/info/dash.preinst install
+dpkg --force-all --configure debconf 2>/dev/null || true
+dpkg --force-all --configure mawk 2>/dev/null || true
+dpkg --configure -a
+
+# Make sure all apt keys are installed
+cd /apt-keys > /dev/null
+for i in *.asc; do
+	apt-key --keyring /etc/apt/trusted.gpg.d/${i%.*}.gpg add ${i}
+done
+cd - > /dev/null
+
+# Set root password
+echo "root:${RPASS}" | chpasswd
+
+# Add user $UNAME
+useradd -m ${UNAME} -s /bin/bash
+
+# Set $UNAME password
+echo "${UNAME}:${UPASS}" | chpasswd
+
+# Add $UNAME to sudo group
+adduser ${UNAME} sudo || true
+adduser ${UNAME} audio || true
+adduser ${UNAME} video || true
+adduser ${UNAME} input || true
+adduser ${UNAME} tty || true
+
+# Initialize /etc/apt/sources.list (remove multistrap from the filenames)
+for i in /etc/apt/sources.list.d/*; do
+	mv $i $(dirname $i)/$(echo $i | cut -d"-" -f2);
+done
+
+apt-get update
+
+APTOPTS="-y --assume-yes --force-yes"
+if [ "$INC_REC" == "0" ]; then
+	APTOPTS="$APTOPTS --no-install-recommends";
+fi
+
+# Install extra packages
+if [ -f /packages.txt ]; then
+	apt-get $APTOPTS install $(cat /packages.txt);
+fi
+
+# Run custom install scripts
+if [ -d /postinst ]; then
+	echo "Running custom postinst scripts"
+	for i in `find /postinst -maxdepth 1 -type f -executable -not -name "*~" | sort`; do
+		echo "  Running $i"
+		$i ${UNAME} ${UBOOT_DIR}
+	done
+else
+	echo "No custom postinst scripts found"
+fi
+
+# Run custom install scripts for a specific distribution
+if [ -d /postinst/${DIST} ]; then
+	echo "Running custom ${DIST} postinst scripts"
+	for i in `find /postinst/${DIST} -maxdepth 1 -type f -executable -not -name "*~"`; do
+		echo "  Running $i"
+		$i
+	done
+else
+	echo "No custom ${DIST} postinst scripts found"
+fi
+
+# Re-enable services to start
+rm -f /usr/sbin/policy-rc.d
+
+# Cleanup
+echo "Running clean up"
+rm -f /etc/hostname
+rm -f /etc/ssh/ssh_host_*
+apt-get autoclean
+apt-get clean
+dpkg --clear-avail

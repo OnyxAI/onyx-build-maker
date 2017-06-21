@@ -1,0 +1,11 @@
+*.img
+*.example
+multistrap.list
+multistrap.err
+rootfs
+rootfs.base
+mnt
+plugins.txt
+*~
+*.tmp
+*.tar*
