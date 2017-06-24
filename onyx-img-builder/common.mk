@@ -71,8 +71,8 @@ else
 	ROOT_MB := $(shell expr $(IMAGE_MB) - $(BOOT_MB))
 endif
 
-TIMESTAMP := $(shell date +'%Y-%m-%dT%H:%M:%S')
+TIMESTAMP := $(shell date +'%Y-%m-%d')
 ROOT_DEV := /dev/mmcblk0p2
 BASE_DIR := $(shell pwd)
 ROOTFS_DIR := $(BASE_DIR)/rootfs
-IMAGE_FILE := $(REPOBASE)-$(DIST)-$(ARCH)
+IMAGE_FILE := ONYX-$(DIST)-$(ARCH)
