@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 systemctl enable ssh.service
 
@@ -29,7 +29,7 @@ sudo cp -r nltk_data/ /root/
 function validate_url(){
   if [[ `wget -S --spider $1  2>&1 | grep 'HTTP/1.1 200 OK'` ]];
   then
-    wget http://download.onyxlabs.fr/onyx-build/onyx-v$ONYX_VERSION-Linux-armv6l.tar.gz
+    wget http://downloads.sourceforge.net/projects/onyxproject/files/onyx-build/onyx-v$ONYX_VERSION-Linux-armv6l.tar.gz
   else
     echo "FILE NOT EXIST"
     echo "EXIT"
@@ -39,7 +39,8 @@ function validate_url(){
 
 ONYX_VERSION=$(curl -s 'https://raw.githubusercontent.com/OnyxProject/Onyx/master/version.json' | jq -r '.version')
 
-validate_url http://download.onyxlabs.fr/onyx-build/onyx-v$ONYX_VERSION-Linux-armv6l.tar.gz
+
+validate_url http://downloads.sourceforge.net/projects/onyxproject/files/onyx-build/onyx-v$ONYX_VERSION-Linux-armv6l.tar.gz
 
 tar zxvf onyx-v$ONYX_VERSION-Linux-armv6l.tar.gz
 
