@@ -7,6 +7,10 @@ curl -SLs https://raw.githubusercontent.com/OnyxProject/Onyx/master/install_debi
 
 mkdir /root/skills
 
+chmod +x /root/skills
+
+ln -s /root/skills /home/pi/skills
+
 apt-get install -y nginx subversion
 
 cd /home
