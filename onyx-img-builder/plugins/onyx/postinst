@@ -46,7 +46,7 @@ function validate_url(){
 ONYX_VERSION=$(curl -s 'https://raw.githubusercontent.com/OnyxProject/Onyx/master/version.json' | jq -r '.version')
 
 
-validate_url http://downloads.sourceforge.net/project/onyxproject/onyx-build/onyx-v$ONYX_VERSION-Linux-armv6l.tar.gz
+validate_url https://github.com/OnyxProject/Onyx/releases/download/$ONYX_VERSION/onyx-v$ONYX_VERSION-Linux-armv6l.tar.gz
 
 tar zxvf onyx-v$ONYX_VERSION-Linux-armv6l.tar.gz
 
