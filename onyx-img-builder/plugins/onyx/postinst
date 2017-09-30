@@ -34,13 +34,14 @@ sudo cp -r nltk_data/ /root/
 function validate_url(){
   if [[ `wget -S --spider $1  2>&1 | grep 'HTTP/1.1 200 OK'` ]];
   then
-    wget http://downloads.sourceforge.net/project/onyxproject/onyx-build/onyx-v$ONYX_VERSION-Linux-armv6l.tar.gz
+    wget https://github.com/OnyxProject/Onyx/releases/download/$ONYX_VERSION/onyx-v$ONYX_VERSION-Linux-armv6l.tar.gz
   else
     echo "FILE NOT EXIST"
     echo "EXIT"
     exit 1
   fi
 }
+
 
 ONYX_VERSION=$(curl -s 'https://raw.githubusercontent.com/OnyxProject/Onyx/master/version.json' | jq -r '.version')
 
